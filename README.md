@@ -134,9 +134,12 @@ In the following diagrams you can see examples of authentification and game proc
 </kbd>
 
 ### Web observer
-The web observer is a Vite/React application that connects to a websocket port and shows list of last messages either sent from server or a client. Arrow down means server response, arrow up means client request.
+The web observer is a Vite/React application that connects to a Websocket port and shows list of last messages either sent from server or a client.
+Arrow down means server response, arrow up means client request. 
 
 <kbd>
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/8355295e-673b-4f63-b8a4-bb47aa132367" />
 </kbd>
 
+As the web observer is a **bonus task**, I decided to send messages as full strings for a simplification. I also realise that this implementation would show only those requests that are sent during the time the website is running.
+If a history woud be necessary (which is often the case), I would save the messages into a file or a database instead.
