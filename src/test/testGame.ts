@@ -7,45 +7,45 @@ testClientSequence(
 
   [
     {
-      expected: MessageType.AuthRequired,
-      response: serializeMessage(MessageType.SendingPassword, PASSWORD),
+      expected: MessageType.OAuthRequired,
+      response: serializeMessage(MessageType.ISendingPassword, PASSWORD),
     },
     {
-      expected: MessageType.PasswordCorrect,
+      expected: MessageType.OPasswordCorrect,
     },
     {
-      expected: MessageType.GuessStart,
-      response: serializeMessage(MessageType.Move, "0"),
+      expected: MessageType.OGuessStart,
+      response: serializeMessage(MessageType.IMove, "wrong secret"),
     },
     {
-      expected: MessageType.WrongAttempt,
-      response: serializeMessage(MessageType.Move, "1"),
+      expected: MessageType.OWrongAttempt,
+      response: serializeMessage(MessageType.IMove, "secret"),
     },
     {
-      expected: MessageType.FWin,
+      expected: MessageType.OFWin,
     },
   ],
   [
     {
-      expected: MessageType.AuthRequired,
-      response: serializeMessage(MessageType.SendingPassword, PASSWORD),
+      expected: MessageType.OAuthRequired,
+      response: serializeMessage(MessageType.ISendingPassword, PASSWORD),
     },
     {
-      expected: MessageType.PasswordCorrect,
-      response: serializeMessage(MessageType.GetOpponents),
+      expected: MessageType.OPasswordCorrect,
+      response: serializeMessage(MessageType.IGetOpponents),
     },
     {
-      expected: MessageType.Opponents,
-      response: serializeMessage(MessageType.Challenge, "1"),
+      expected: MessageType.OOpponents,
+      response: serializeMessage(MessageType.IChallenge, "secret"),
     },
     {
-      expected: MessageType.ChallengeAccepted,
+      expected: MessageType.OChallengeAccepted,
     },
     {
-      expected: MessageType.Attempt,
+      expected: MessageType.OAttempt,
     },
     {
-      expected: MessageType.FCorrectAttempt,
+      expected: MessageType.OFCorrectAttempt,
     },
   ]
 );

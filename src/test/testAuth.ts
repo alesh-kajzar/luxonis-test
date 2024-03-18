@@ -4,24 +4,24 @@ import { testClientSequence } from "./common";
 
 testClientSequence("test incorrect auth", [
   {
-    expected: MessageType.AuthRequired,
-    response: serializeMessage(MessageType.SendingPassword, "wrongpassword"),
+    expected: MessageType.OAuthRequired,
+    response: serializeMessage(MessageType.ISendingPassword, "wrongpassword"),
   },
   {
-    expected: MessageType.FPasswordIncorrect,
+    expected: MessageType.OFPasswordIncorrect,
   },
 ]);
 
 testClientSequence("test no opponents available", [
   {
-    expected: MessageType.AuthRequired,
-    response: serializeMessage(MessageType.SendingPassword, PASSWORD),
+    expected: MessageType.OAuthRequired,
+    response: serializeMessage(MessageType.ISendingPassword, PASSWORD),
   },
   {
-    expected: MessageType.PasswordCorrect,
-    response: serializeMessage(MessageType.GetOpponents),
+    expected: MessageType.OPasswordCorrect,
+    response: serializeMessage(MessageType.IGetOpponents),
   },
   {
-    expected: MessageType.FNoOpponents,
+    expected: MessageType.OFNoOpponents,
   },
 ]);

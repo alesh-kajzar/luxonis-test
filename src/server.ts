@@ -26,10 +26,10 @@ export function startServers() {
   };
 
   const sendAuthRequired = (socket: Socket) => {
-    socket.write(serializeMessage(MessageType.AuthRequired));
+    socket.write(serializeMessage(MessageType.OAuthRequired));
   };
 
-  const processPassword = (socket: Socket, password: string) => {
+  const processPassword = (socket: Socket, password?: string) => {
     if (password === PASSWORD) {
       processPasswordCorrect(socket);
       clients.set(socket, { ...clients.get(socket)!, loggedIn: true });
@@ -40,12 +40,12 @@ export function startServers() {
 
   const processPasswordCorrect = (socket: Socket) => {
     socket.write(
-      serializeMessage(MessageType.PasswordCorrect, clientIdCounter.toString())
+      serializeMessage(MessageType.OPasswordCorrect, clientIdCounter.toString())
     );
   };
 
   const processPasswordIncorrect = (socket: Socket) => {
-    socket.write(serializeMessage(MessageType.FPasswordIncorrect));
+    socket.write(serializeMessage(MessageType.OFPasswordIncorrect));
     closeSocket(socket);
   };
 
@@ -67,10 +67,10 @@ export function startServers() {
 
       if (opponents.length > 0) {
         socket.write(
-          serializeMessage(MessageType.Opponents, opponents.join(","))
+          serializeMessage(MessageType.OOpponents, opponents.join(","))
         );
       } else {
-        socket.write(serializeMessage(MessageType.FNoOpponents));
+        socket.write(serializeMessage(MessageType.OFNoOpponents));
         closeSocket(socket);
       }
     } else {
@@ -85,40 +85,89 @@ export function startServers() {
     return opponent ? opponent[0] : undefined;
   };
 
-  const processChallenge = (socket: Socket, challengeContent: string) => {
+  const processChallenge = (socket: Socket, challengeContent?: string) => {
     const opponents = getOpponents(socket);
-    const [secretWord, opponentId] = challengeContent.split("|");
 
-    if (
-      opponents.length > 0 &&
-      (opponentId.length === 0 || opponents.includes(opponentId))
-    ) {
-      const opponent = parseInt(
-        opponentId.length === 0 ? opponents[0] : opponentId
-      );
-      const opponentSocket = getOpponentById(opponent.toString());
+    if (challengeContent) {
+      const [secretWord, opponentId] = challengeContent.split("|");
 
-      if (opponentSocket) {
-        const client = clients.get(socket);
-        const opponent = clients.get(opponentSocket);
+      if (
+        opponents.length > 0 &&
+        (!opponentId || opponents.includes(opponentId))
+      ) {
+        const opponent = parseInt(opponentId ? opponentId : opponents[0]);
+        const opponentSocket = getOpponentById(opponent.toString());
 
-        if (client && opponent) {
-          client.inGame = true;
-          client.secretWord = secretWord;
-          opponent.inGame = true;
-          opponent.isGuessing = true;
-          client.opponentId = opponent.clientId;
-          opponent.opponentId = client.clientId;
+        if (opponentSocket) {
+          const clientGS = clients.get(socket);
+          const opponentGS = clients.get(opponentSocket);
 
-          socket.write(
-            serializeMessage(
-              MessageType.ChallengeAccepted,
-              opponent.clientId.toString()
-            )
-          );
-          opponentSocket.write(
-            serializeMessage(MessageType.GuessStart, client.clientId.toString())
-          );
+          if (clientGS && opponentGS) {
+            clientGS.inGame = true;
+            clientGS.secretWord = secretWord;
+            opponentGS.inGame = true;
+            opponentGS.isGuessing = true;
+            clientGS.opponentId = opponentGS.clientId;
+            opponentGS.opponentId = clientGS.clientId;
+
+            socket.write(
+              serializeMessage(
+                MessageType.OChallengeAccepted,
+                opponentGS.clientId.toString()
+              )
+            );
+            opponentSocket.write(
+              serializeMessage(
+                MessageType.OGuessStart,
+                clientGS.clientId.toString()
+              )
+            );
+          }
+        } else {
+          processWrongState(socket); // opponent not found
+        }
+      } else {
+        processWrongState(socket); // no opponents available
+      }
+    } else {
+      processWrongState(socket); // no challenge content (no secret word)
+    }
+  };
+
+  const processWrongState = (socket: Socket) => {
+    socket.write(serializeMessage(MessageType.OFWrongState));
+    closeSocket(socket);
+  };
+
+  const processGiveUp = (socket: Socket) => {
+    const opponentSocket = getOpponentById(
+      clients.get(socket)!.opponentId!.toString()
+    );
+
+    if (opponentSocket) {
+      opponentSocket.write(serializeMessage(MessageType.OFGameOver));
+      closeSocket(opponentSocket);
+    }
+
+    closeSocket(socket);
+  };
+
+  const processMove = (socket: Socket, move?: string) => {
+    const clientGS = clients.get(socket);
+    const opponentSocket = getOpponentById(clientGS!.opponentId!.toString());
+
+    if (clientGS && opponentSocket) {
+      const opponentGS = clients.get(opponentSocket);
+
+      if (opponentGS && clientGS.isGuessing) {
+        if (move === opponentGS.secretWord) {
+          socket.write(serializeMessage(MessageType.OFWin));
+          opponentSocket.write(serializeMessage(MessageType.OFCorrectAttempt));
+          closeSocket(socket);
+          closeSocket(opponentSocket);
+        } else {
+          socket.write(serializeMessage(MessageType.OWrongAttempt));
+          opponentSocket.write(serializeMessage(MessageType.OAttempt));
         }
       } else {
         processWrongState(socket);
@@ -128,22 +177,20 @@ export function startServers() {
     }
   };
 
-  const processWrongState = (socket: Socket) => {
-    socket.write(serializeMessage(MessageType.WrongState));
-    closeSocket(socket);
-  };
+  const processHint = (socket: Socket, hint?: string) => {
+    const clientGS = clients.get(socket);
+    const opponentSocket = getOpponentById(clientGS!.opponentId!.toString());
 
-  const processGiveUp = (socket: Socket) => {
-    const opponent = getOpponentById(
-      clients.get(socket)!.opponentId!.toString()
-    );
-
-    if (opponent) {
-      opponent.write(serializeMessage(MessageType.FGameOver));
-      closeSocket(opponent);
+    if (clientGS && opponentSocket && hint) {
+      if (clientGS.isGuessing) {
+        // guessing client cannot hint
+        processWrongState(socket);
+      } else {
+        opponentSocket.write(serializeMessage(MessageType.OHint, hint));
+      }
+    } else {
+      processWrongState(socket);
     }
-
-    closeSocket(socket);
   };
 
   tcpServer.on("connection", (socket: Socket) => {
@@ -161,21 +208,26 @@ export function startServers() {
       const { type, payload } = deserializeMessage(data);
 
       switch (type) {
-        case MessageType.SendingPassword:
-          processPassword(socket, payload.toString());
-
+        case MessageType.ISendingPassword:
+          processPassword(socket, payload);
           break;
-        case MessageType.GetOpponents:
+        case MessageType.IGetOpponents:
           processGetOpponents(socket);
           break;
-        case MessageType.Challenge:
-          processChallenge(socket, payload.toString());
+        case MessageType.IChallenge:
+          processChallenge(socket, payload);
           break;
-        case MessageType.FGiveUp:
+        case MessageType.IMove:
+          processMove(socket, payload);
+          break;
+        case MessageType.IHint:
+          processHint(socket, payload);
+          break;
+        case MessageType.IFGiveUp:
           processGiveUp(socket);
           break;
         default:
-          socket.write(serializeMessage(MessageType.UnknownMessageType));
+          socket.write(serializeMessage(MessageType.OFUnknownMessageType));
           break;
       }
     });

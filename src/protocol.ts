@@ -1,27 +1,34 @@
 import { Buffer } from "buffer";
 
 export enum MessageType {
-  AuthRequired = 0x01,
-  SendingPassword = 0x02,
-  PasswordCorrect = 0x03,
-  FPasswordIncorrect = 0x04,
-  GetOpponents = 0x05,
-  Opponents = 0x06,
-  FNoOpponents = 0x07,
-  Challenge = 0x08,
-  ChallengeAccepted = 0x09,
-  ChallengeRejected = 0x0a,
-  Move = 0x0b,
-  Hint = 0x0c,
-  FGameOver = 0x0d,
-  FGiveUp = 0x0e,
-  WrongState = 0x0f,
-  GuessStart = 0x10,
-  Attempt = 0x11,
-  WrongAttempt = 0x12,
-  FWin = 0x13,
-  FCorrectAttempt = 0x14,
-  UnknownMessageType = 0xff,
+  // Input
+  ISendingPassword = 1,
+  IGetOpponents = 2,
+  IChallenge = 3,
+  IMove = 4,
+  IHint = 5,
+  IFGiveUp = 6,
+
+  // Ouput
+  OAuthRequired = 7,
+  OPasswordCorrect = 8,
+  OChallengeAccepted = 9,
+  OChallengeRejected = 10,
+  OOpponents = 11,
+  OGuessStart = 12,
+  OAttempt = 13,
+  OWrongAttempt = 14,
+  OHint = 15,
+
+  // Output final states
+  OFPasswordIncorrect = 16,
+  OFNoOpponents = 17,
+  OFGameOver = 18,
+  OFWrongState = 19,
+  OFWin = 20,
+  OFCorrectAttempt = 21,
+
+  OFUnknownMessageType = 255,
 }
 
 // Serialize a message
@@ -39,17 +46,17 @@ export function serializeMessage(type: MessageType, payload?: string): Buffer {
 // Deserialize a message
 export function deserializeMessage(buffer: Buffer): {
   type: MessageType;
-  payload: Buffer;
+  payload?: string;
 } {
   const type = buffer.readUInt8(0) as MessageType;
 
   if (buffer.length < 3) {
-    return { type: MessageType.UnknownMessageType, payload: Buffer.alloc(0) };
+    return { type: MessageType.OFUnknownMessageType };
   } else if (buffer.length === 3) {
-    return { type, payload: Buffer.alloc(0) };
+    return { type };
   } else {
     const length = buffer.readUInt16BE(1);
-    const payload = buffer.subarray(3, 3 + length);
+    const payload = buffer.subarray(3, 3 + length).toString();
     return { type, payload };
   }
 }

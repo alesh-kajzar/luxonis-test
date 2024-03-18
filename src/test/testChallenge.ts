@@ -7,35 +7,35 @@ testClientSequence(
 
   [
     {
-      expected: MessageType.AuthRequired,
-      response: serializeMessage(MessageType.SendingPassword, PASSWORD),
+      expected: MessageType.OAuthRequired,
+      response: serializeMessage(MessageType.ISendingPassword, PASSWORD),
     },
     {
-      expected: MessageType.PasswordCorrect,
+      expected: MessageType.OPasswordCorrect,
     },
     {
-      expected: MessageType.GuessStart,
-      response: serializeMessage(MessageType.FGiveUp),
+      expected: MessageType.OGuessStart,
+      response: serializeMessage(MessageType.IFGiveUp),
     },
   ],
   [
     {
-      expected: MessageType.AuthRequired,
-      response: serializeMessage(MessageType.SendingPassword, PASSWORD),
+      expected: MessageType.OAuthRequired,
+      response: serializeMessage(MessageType.ISendingPassword, PASSWORD),
     },
     {
-      expected: MessageType.PasswordCorrect,
-      response: serializeMessage(MessageType.GetOpponents),
+      expected: MessageType.OPasswordCorrect,
+      response: serializeMessage(MessageType.IGetOpponents),
     },
     {
-      expected: MessageType.Opponents,
-      response: serializeMessage(MessageType.Challenge),
+      expected: MessageType.OOpponents,
+      response: serializeMessage(MessageType.IChallenge, "secret"),
     },
     {
-      expected: MessageType.ChallengeAccepted,
+      expected: MessageType.OChallengeAccepted,
     },
     {
-      expected: MessageType.FGameOver,
+      expected: MessageType.OFGameOver,
     },
   ]
 );
