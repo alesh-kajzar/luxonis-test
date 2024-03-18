@@ -54,9 +54,6 @@ client.on("data", (data) => {
     case MessageType.OChallengeAccepted:
       console.log("Challenge accepted! Waiting for attempts...");
       break;
-    case MessageType.OChallengeRejected:
-      console.log("Challenge rejected!");
-      break;
     case MessageType.OHint:
       console.log("Hint received: " + payload?.toString());
     case MessageType.OGuessStart:
