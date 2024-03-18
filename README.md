@@ -90,30 +90,31 @@ Message types have following prefixes:
 - **IF** (IFGiveUp) - input that closes the connection (opponent is also disconnected)
 
 #### Protocol messages
-| Message              | Payload  |  Type      |  Description          |
-|----------------------|----------|------------|----------------------|
-| ISendingPassword     | Yes       |  Input     |  Auth using password in payload  |  
-| IGetOpponents        | No       |  Input     |  Request opponent numbers.  |  
-| IChallenge           | Yes       |  Input     | Challenge an opponent, payload contains `secret` and `opponentId` delimited by '\|', e.g., `'secret\|1'`. If only a secret is provided, first available opponent is selected.                |  
-| IMove                | Yes      |  Input     |  Try to guess a secret (provided in payload)                    |  
-|   IHint              | Yes      |  Input     |  Hint sent from client A to client B   (provided in payload)                  |  
-|   IFGiveUp           | No      |  Input Final|  Give up and close connection.                    |  
-|   IContinue          | No         |  Input     |  Client A says to B 'continue with guesses'.                    |  
-|   OAuthRequired      | No         |  Output    | Server requires a secret.                     |
-|   OPasswordCorrect   |  No        |  Output    |  Password is correct.                    |
-|  OChallengeAccepted  | No         |  Output    |  Challenge is accepted.                    |
-|   OOpponents         |  Yes      |  Output    |  Server provides a list of opponents delimited by comma (after `IGetOpponents`)                  |
-|   OGuessStart        |  No      |  Output    |   Client can start its guesses.                   |
-|    OWrongAttempt     |  No        |  Output    | Wrong move.                     |
-|     OHint            |  Yes        |  Output    |  Hint sent from A to B, payload contains the text.                    |
-|    OContinue         |  No        |  Output    |   Client can continue its guesses.                    |
-|    OFPasswordIncorrect|  No      |  Output Final |  Initial password is incorrect.                    |
-|     OFNoOpponents    |  No      |  Output Final |  No opponents are available.                    |
-|     OFGameOver       |  No      |  Output Final |  Opponent gave up.                    |
-|    OFWrongState      |  No      |  Output Final |  Wrong state (ends connection).                    |
-|     OFWin            |  No      |  Output Final |  Correct attempt - win!                    |
-|     OFCorrectAttempt |  No      |  Output Final |  Correct attempt - client A is informed that client B won.                    |
-| OFUnknownMessageType |  No      |  Output Final |  Unknown message (ends connection)                    |
+| Message Type         | Message code (int) | Payload  |  Type      |  Description          |
+|----------------------|--------------------|----------|------------|----------------------|
+| ISendingPassword     |  1                 | Yes      |  Input     |  Auth using password in payload  |  
+| IGetOpponents        |  2                 | No       |  Input     |  Request opponent numbers.  |  
+| IChallenge           |  3                 | Yes      |  Input     | Challenge an opponent, payload contains `secret` and `opponentId` delimited by '\|', e.g., `'secret\|1'`. If only a secret is provided, first available opponent is selected.                |  
+| IMove                |  4                 | Yes      |  Input     |  Try to guess a secret (provided in payload)                    |  
+|   IHint              |  5                 | Yes      |  Input     |  Hint sent from client A to client B   (provided in payload)                  |  
+|   IFGiveUp           |  6                 | No       |  Input Final|  Give up and close connection.                    |  
+|   IContinue          |  7                 | No       |  Input     |  Client A says to B 'continue with guesses'.                    |  
+|   OAuthRequired      |  10                | No       |  Output    | Server requires a secret.                     |
+|   OPasswordCorrect   |  11                |  No      |  Output    |  Password is correct.                    |
+|  OChallengeAccepted  |  12                | No       |  Output    |  Challenge is accepted.                    |
+|   OOpponents         |  14                |  Yes     |  Output    |  Server provides a list of opponents delimited by comma (after `IGetOpponents`)                  |
+|   OGuessStart        |  15                |  No      |  Output    |   Client can start its guesses.                   |
+|    OAttempt          |  16                |  No      |  Output    | Wrong move (sent as information to client A).                     |
+|    OWrongAttempt     |  17                |  No      |  Output    | Wrong move (sent as response to the guessing client).                     |
+|     OHint            |  18                |  Yes     |  Output    |  Hint sent from A to B, payload contains the text.                    |
+|    OContinue         |  19                |  No      |  Output    |   Client can continue its guesses.                    |
+|    OFPasswordIncorrect|  31               |  No      |  Output Final |  Initial password is incorrect.                    |
+|     OFNoOpponents    |   32               |  No      |  Output Final |  No opponents are available.                    |
+|     OFGameOver       |   33               |  No      |  Output Final |  Opponent gave up.                    |
+|    OFWrongState      |   34               |  No      |  Output Final |  Wrong state (ends connection).                    |
+|     OFWin            |   35               |  No      |  Output Final |  Correct attempt - win!                    |
+|     OFCorrectAttempt |   36               |  No      |  Output Final |  Correct attempt - client A is informed that client B won.                    |
+| OFUnknownMessageType |  255               |  No      |  Output Final |  Unknown message (ends connection) .                   |
 
 In the following diagrams you can see examples of authentification and game process. For a simplification of the test task I decided to close connection on each error.
 
