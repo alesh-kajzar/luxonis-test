@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observer</title>
+    <script>
+        const events = [];
+
+        const addMessage = (message) => {
+            events.push(message);
+            document.getElementById('log').innerHTML = events.join('<br>');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const log = document.getElementById('log');
+
+            const ws = new WebSocket('ws://localhost:8081');
+            ws.onopen = function() {
+                addMessage('Connected');
+            };
+            ws.onerror = function(error) {
+                addMessage("Error");
+                console.log(error);
+            };
+            ws.onmessage = function(event) {
+                addMessage("Message received");
+                console.log(event);
+            };
+            ws.onclose = function() {
+                addMessage('Disconnected');
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>
+        Connection observer
+    </h1>
+    <div id="log"></div>
+</body>
+</html>
