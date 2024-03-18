@@ -5,7 +5,7 @@ There are two main folders:
 
 The easiest option to just start the app is to try a dev mode.
 
-### Run dev mode
+### Run dev mode [recommended]
 #### 1. Open a terminal and install and run server
 ```
 cd cli
