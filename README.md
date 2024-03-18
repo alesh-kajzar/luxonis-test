@@ -53,4 +53,9 @@ In the following diagrams you can see examples of authentification and game proc
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/01c638e6-675d-4b10-9ae4-9409ae88762a" width="300" />
 
 ### Web observer
-The web observer is a Vite/React application that connects to a websocket port and shows list of last messages either sent from server or a client.
+The web observer is a Vite/React application that connects to a websocket port and shows list of last messages either sent from server or a client. Arrow down means server response, arrow up means client request.
+
+<kbd>
+<img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/8355295e-673b-4f63-b8a4-bb47aa132367" />
+</kbd>
+
