@@ -1,27 +1,113 @@
-import { connect } from 'net';
-import { TCP_PORT } from './config';
+import { connect } from "net";
+import { PASSWORD, TCP_PORT } from "./config";
+import {
+  MessageType,
+  deserializeMessage,
+  encodeMovePayload,
+  serializeMessage,
+} from "./protocol";
+import * as readline from "readline";
 
 function startClient() {
-    const client = connect({ port: TCP_PORT }, () => {
-        console.log('Connected to server!');
-        // Send password or any initiation message to server after connection
-        //const passwordMessage = Buffer.from([0x01, 0x00, 0x00, 0x00, 0x0C]);
-        client.write('Hello from client!');
-    });
-    
-    client.on('data', (data) => {
-        console.log('Server says:', data.toString());
-        // Here you can add logic to respond to server messages based on your protocol
-    });
-    
-    client.on('close', () => {
-        console.log('Connection to server closed');
-    });
+  const args = process.argv.slice(2);
 
-    client.on('error', (err) => {
-        console.error('Error:', err);
-    });
+  const client = connect({ port: TCP_PORT }, () => {
+    console.log("Connected to server!");
+  });
 
-    return client;
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  client.on("data", (data) => {
+    const { type, payload } = deserializeMessage(data);
+
+    switch (type) {
+      case MessageType.OAuthRequired:
+        rl.question("Enter password: ", (password) => {
+          client.write(
+            serializeMessage(MessageType.ISendingPassword, password)
+          );
+        });
+
+        break;
+      case MessageType.OPasswordCorrect:
+        console.log("Password correct! Client id: " + payload?.toString());
+
+        if (args.length > 0 && args[0] === "create") {
+          client.write(serializeMessage(MessageType.IGetOpponents));
+        }
+
+        break;
+      case MessageType.OOpponents:
+        console.log("Opponents: " + payload?.toString());
+        rl.question("Enter opponent id: ", (opponentId) => {
+          rl.question("Enter secret to guess: ", (secret) => {
+            client.write(
+              serializeMessage(
+                MessageType.IChallenge,
+                encodeMovePayload(secret, opponentId)
+              )
+            );
+          });
+        });
+
+        break;
+      case MessageType.OChallengeAccepted:
+        console.log("Challenge accepted! Waiting for attempts...");
+        break;
+      case MessageType.OChallengeRejected:
+        console.log("Challenge rejected!");
+        break;
+      case MessageType.OGuessStart:
+        console.log("Guessing start!");
+        rl.question("Enter guess: ", (guess) => {
+          client.write(serializeMessage(MessageType.IMove, guess));
+        });
+        break;
+      case MessageType.OAttempt:
+        console.log("Attempt made!");
+        break;
+      case MessageType.OWrongAttempt:
+        console.log("Wrong attempt!");
+        rl.question("Enter guess: ", (guess) => {
+          client.write(serializeMessage(MessageType.IMove, guess));
+        });
+        break;
+      case MessageType.OHint:
+        console.log("Hint received: " + payload?.toString());
+        break;
+      case MessageType.OFGameOver:
+        console.log("Game over!");
+        break;
+      case MessageType.OFWin:
+        console.log("You win!");
+        break;
+      case MessageType.OFCorrectAttempt:
+        console.log("Correct attempt!");
+        break;
+      case MessageType.OFPasswordIncorrect:
+        console.log("Password incorrect!");
+        break;
+      case MessageType.OFNoOpponents:
+        console.log("No opponents available!");
+        break;
+      case MessageType.OFWrongState:
+        console.log("Wrong state!");
+        break;
+
+      default:
+        console.log("Received unknown message, closing connection to server");
+        break;
+    }
+  });
+
+  client.on("close", () => {
+    console.log("Connection to server closed");
+  });
+
+  return client;
 }
 
+startClient();

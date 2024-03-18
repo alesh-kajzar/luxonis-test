@@ -15,6 +15,7 @@
     "start:server": "node dist/server.js",
     "start:client": "node dist/client.js",
     "dev:server": "ts-node src/server.ts",
+    "dev:client": "ts-node src/client.ts",
     "observer": "http-server ./public -p 8082",
     "test": "jest --runInBand"
   }

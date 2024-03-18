@@ -254,9 +254,5 @@ export function startServers() {
 
   return { tcpServer, wss };
 }
-function deserializerMovePayload(challengeContent: string): {
-  opponentId: any;
-  secretWord: any;
-} {
-  throw new Error("Function not implemented.");
-}
+
+startServers();
