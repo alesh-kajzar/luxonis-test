@@ -74,7 +74,7 @@ client.on("data", (data) => {
       });
       break;
     case MessageType.OWrongAttempt:
-      console.log("Wrong attempt!");
+      console.log("Wrong attempt! Wait for master's next instruction.");
       break;
     case MessageType.OFGameOver:
       console.log("Game over!");

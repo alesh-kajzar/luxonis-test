@@ -1,19 +1,30 @@
 import { createServer, Socket } from "net";
-import { WebSocketServer } from "ws";
 import { TCP_PORT, WEBSOCKET_PORT } from "../config";
-import { deserializeMessage, MessageType, serializeMessage } from "../protocol";
+import { deserializeMessage, messageMap, MessageType } from "../protocol";
 import ConnectionManager from "./connectionManager";
+import ObserverServer from "./observerServer";
 
 export function startServers() {
   const tcpServer = createServer();
-  const wss = new WebSocketServer({ port: WEBSOCKET_PORT });
-  const connectionManager = new ConnectionManager();
+  const oss = new ObserverServer(WEBSOCKET_PORT);
+  const connectionManager = new ConnectionManager(oss);
 
   tcpServer.on("connection", (socket: Socket) => {
-    connectionManager.initializeClient(socket);
+    const clientId = connectionManager.initializeClient(socket);
+
+    oss.broadcast({
+      clientId: clientId,
+      type: "Connected",
+    });
 
     socket.on("data", (data) => {
       const { type, payload } = deserializeMessage(data);
+
+      oss.broadcast({
+        clientId: clientId,
+        type: messageMap[type],
+        content: payload,
+      });
 
       switch (type) {
         case MessageType.ISendingPassword:
@@ -44,19 +55,18 @@ export function startServers() {
     });
 
     socket.on("close", () => {
+      oss.broadcast({
+        clientId: clientId,
+        type: "Disconnected",
+      });
+
       connectionManager.removeSocket(socket);
     });
   });
 
-  const server = tcpServer.listen(TCP_PORT);
+  tcpServer.listen(TCP_PORT);
 
-  server.on("upgrade", (request, socket, head) => {
-    // wss.handleUpgrade(request, socket, head, (ws: any) => {
-    //     wss.emit('connection', ws, request);
-    // });
-  });
-
-  return { tcpServer, wss };
+  return { tcpServer, oss };
 }
 
 process.argv.length > 2 && process.argv[2] === "listen" && startServers();

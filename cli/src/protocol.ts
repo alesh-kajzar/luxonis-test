@@ -33,6 +33,33 @@ export enum MessageType {
   OFUnknownMessageType = 255,
 }
 
+export const messageMap = {
+  [MessageType.ISendingPassword]: "Password sent",
+  [MessageType.IGetOpponents]: "Get opponents",
+  [MessageType.IChallenge]: "Challenge",
+  [MessageType.IMove]: "Move",
+  [MessageType.IHint]: "Hint",
+  [MessageType.IFGiveUp]: "Give up",
+  [MessageType.IContinue]: "Continue",
+  [MessageType.OAuthRequired]: "Auth required",
+  [MessageType.OPasswordCorrect]: "Password correct",
+  [MessageType.OChallengeAccepted]: "Challenge accepted",
+  [MessageType.OChallengeRejected]: "Challenge rejected",
+  [MessageType.OOpponents]: "Opponents",
+  [MessageType.OGuessStart]: "Guess start",
+  [MessageType.OAttempt]: "Attempt",
+  [MessageType.OWrongAttempt]: "Wrong attempt",
+  [MessageType.OHint]: "Hint",
+  [MessageType.OContinue]: "Continue",
+  [MessageType.OFPasswordIncorrect]: "Password incorrect",
+  [MessageType.OFNoOpponents]: "No opponents",
+  [MessageType.OFGameOver]: "Game over",
+  [MessageType.OFWrongState]: "Wrong state",
+  [MessageType.OFWin]: "Win",
+  [MessageType.OFCorrectAttempt]: "Correct attempt",
+  [MessageType.OFUnknownMessageType]: "Unknown message",
+};
+
 // Serialize a message
 export function serializeMessage(type: MessageType, payload?: string): Buffer {
   const length = payload ? Buffer.byteLength(payload) : 0;

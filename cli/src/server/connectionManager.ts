@@ -1,6 +1,12 @@
 import { Socket } from "net";
 import { PASSWORD } from "../config";
-import { decodeMovePayload, MessageType, serializeMessage } from "../protocol";
+import {
+  decodeMovePayload,
+  messageMap,
+  MessageType,
+  serializeMessage,
+} from "../protocol";
+import ObserverServer from "./observerServer";
 
 type GameState = {
   clientId: number;
@@ -14,15 +20,19 @@ type GameState = {
 class ConnectionManager {
   private clients: Map<Socket, GameState>;
   private clientIdCounter: number;
+  private oss: ObserverServer;
 
-  constructor() {
+  constructor(oss: ObserverServer) {
     this.clients = new Map<Socket, GameState>();
     this.clientIdCounter = 1;
+    this.oss = oss;
   }
 
   public initializeClient(socket: Socket) {
+    const clientId = this.clientIdCounter;
+
     this.clients.set(socket, {
-      clientId: this.clientIdCounter,
+      clientId: clientId,
       loggedIn: false,
       inGame: false,
       isGuessing: false,
@@ -31,6 +41,8 @@ class ConnectionManager {
     this.clientIdCounter++;
 
     this.sendAuthRequired(socket);
+
+    return clientId;
   }
 
   public removeSocket(socket: Socket) {
@@ -43,7 +55,7 @@ class ConnectionManager {
   }
 
   private sendAuthRequired(socket: Socket) {
-    socket.write(serializeMessage(MessageType.OAuthRequired));
+    this.writeMessage(socket, MessageType.OAuthRequired);
   }
 
   public processPassword(socket: Socket, password?: string) {
@@ -59,16 +71,15 @@ class ConnectionManager {
   }
 
   public processPasswordCorrect(socket: Socket) {
-    socket.write(
-      serializeMessage(
-        MessageType.OPasswordCorrect,
-        this.clientIdCounter.toString()
-      )
+    this.writeMessage(
+      socket,
+      MessageType.OPasswordCorrect,
+      this.clientIdCounter.toString()
     );
   }
 
   public processPasswordIncorrect(socket: Socket) {
-    socket.write(serializeMessage(MessageType.OFPasswordIncorrect));
+    this.writeMessage(socket, MessageType.OFPasswordIncorrect);
     this.closeSocket(socket);
   }
 
@@ -90,11 +101,9 @@ class ConnectionManager {
       const opponents = this.getOpponents(socket);
 
       if (opponents.length > 0) {
-        socket.write(
-          serializeMessage(MessageType.OOpponents, opponents.join(","))
-        );
+        this.writeMessage(socket, MessageType.OOpponents, opponents.join(","));
       } else {
-        socket.write(serializeMessage(MessageType.OFNoOpponents));
+        this.writeMessage(socket, MessageType.OFNoOpponents);
         this.closeSocket(socket);
       }
     } else {
@@ -134,17 +143,15 @@ class ConnectionManager {
             clientGS.opponentId = opponentGS.clientId;
             opponentGS.opponentId = clientGS.clientId;
 
-            socket.write(
-              serializeMessage(
-                MessageType.OChallengeAccepted,
-                opponentGS.clientId.toString()
-              )
+            this.writeMessage(
+              socket,
+              MessageType.OChallengeAccepted,
+              opponentGS.clientId.toString()
             );
-            opponentSocket.write(
-              serializeMessage(
-                MessageType.OGuessStart,
-                clientGS.clientId.toString()
-              )
+            this.writeMessage(
+              opponentSocket,
+              MessageType.OGuessStart,
+              clientGS.clientId.toString()
             );
           }
         } else {
@@ -159,7 +166,7 @@ class ConnectionManager {
   }
 
   public processWrongState(socket: Socket) {
-    socket.write(serializeMessage(MessageType.OFWrongState));
+    this.writeMessage(socket, MessageType.OFWrongState);
     this.closeSocket(socket);
   }
 
@@ -169,7 +176,7 @@ class ConnectionManager {
     );
 
     if (opponentSocket) {
-      opponentSocket.write(serializeMessage(MessageType.OFGameOver));
+      this.writeMessage(opponentSocket, MessageType.OFGameOver);
       this.closeSocket(opponentSocket);
     }
 
@@ -187,13 +194,13 @@ class ConnectionManager {
 
       if (opponentGS && clientGS.isGuessing) {
         if (move === opponentGS.secretWord) {
-          socket.write(serializeMessage(MessageType.OFWin));
-          opponentSocket.write(serializeMessage(MessageType.OFCorrectAttempt));
+          this.writeMessage(socket, MessageType.OFWin);
+          this.writeMessage(opponentSocket, MessageType.OFCorrectAttempt);
           this.closeSocket(socket);
           this.closeSocket(opponentSocket);
         } else {
-          socket.write(serializeMessage(MessageType.OWrongAttempt));
-          opponentSocket.write(serializeMessage(MessageType.OAttempt));
+          this.writeMessage(socket, MessageType.OWrongAttempt);
+          this.writeMessage(opponentSocket, MessageType.OAttempt);
         }
       } else {
         this.processWrongState(socket);
@@ -213,7 +220,7 @@ class ConnectionManager {
       const opponentGS = this.clients.get(opponentSocket);
 
       if (opponentGS?.isGuessing) {
-        opponentSocket.write(serializeMessage(MessageType.OContinue));
+        this.writeMessage(opponentSocket, MessageType.OContinue);
       } else {
         this.processWrongState(socket);
       }
@@ -233,7 +240,7 @@ class ConnectionManager {
         // guessing client cannot hint
         this.processWrongState(socket);
       } else {
-        opponentSocket.write(serializeMessage(MessageType.OHint, hint));
+        this.writeMessage(opponentSocket, MessageType.OHint, hint);
       }
     } else {
       this.processWrongState(socket);
@@ -241,8 +248,18 @@ class ConnectionManager {
   }
 
   public processUnknownMessageType(socket: Socket) {
-    socket.write(serializeMessage(MessageType.OFUnknownMessageType));
+    this.writeMessage(socket, MessageType.OFUnknownMessageType);
     this.closeSocket(socket);
+  }
+
+  private writeMessage(socket: Socket, type: MessageType, payload?: string) {
+    socket.write(serializeMessage(type, payload));
+
+    this.oss.broadcast({
+      clientId: this.clients.get(socket)!.clientId,
+      type: messageMap[type],
+      content: payload,
+    });
   }
 }
 

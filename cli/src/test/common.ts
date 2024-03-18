@@ -3,9 +3,10 @@ import { Server } from "ws";
 import { TCP_PORT } from "../config";
 import { MessageType, deserializeMessage } from "../protocol";
 import { startServers } from "../server/server";
+import ObserverServer from "../server/observerServer";
 
 let tcpServer: TCPServer | undefined = undefined;
-let wss: Server | undefined = undefined;
+let oss: ObserverServer | undefined = undefined;
 
 export type SequencePart = {
   expected: MessageType;
@@ -100,10 +101,10 @@ export const testClientSequence = (
 beforeAll(() => {
   const servers = startServers();
   tcpServer = servers.tcpServer;
-  wss = servers.wss;
+  oss = servers.oss;
 });
 
 afterAll(() => {
   tcpServer?.close();
-  wss?.close();
+  oss?.close();
 });

@@ -1,68 +1,95 @@
-"use client";
-
+import {
+  IconCloudDataConnection,
+  IconPlugConnected,
+  IconPlugConnectedX,
+} from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
+import classes from "./ObserverTable.module.css";
 
-interface Message {
+type Message = {
   id: number;
-  content: string;
+  clientId: number;
   type: string;
+  content?: string;
   date: Date;
-}
+};
+
+type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
 const ObserverTable: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [connectionStatus, setConnectionStatus] =
+    useState<ConnectionStatus>("connecting");
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8081");
 
     ws.onopen = () => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: 0, content: "Connected", type: "", date: new Date() },
-      ]);
-      console.log("Connected to server");
+      setConnectionStatus("connected");
     };
 
     ws.onclose = () => {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: 0, content: "Disconnected", type: "", date: new Date() },
-      ]);
-      console.log("Disconnected from server");
+      setConnectionStatus("disconnected");
     };
 
     ws.onmessage = (event) => {
       const message: Message = {
-        ...JSON.parse(event.data),
+        ...JSON.parse(event.data.toString()),
         date: new Date(),
       };
-      setMessages((prevMessages) => [...prevMessages, message]);
+      setMessages((prevMessages) => {
+        return prevMessages.find((m) => m.id === message.id)
+          ? prevMessages
+          : [message, ...prevMessages].slice(0, 25);
+      });
     };
 
     return () => {
-      ws.close();
+      if (ws.readyState === ws.OPEN) {
+        ws.close();
+      }
     };
   }, []);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Client ID</th>
-          <th>Message</th>
-        </tr>
-      </thead>
-      <tbody>
-        {messages.map((message) => (
-          <tr key={message.id}>
-            <td>{`${message.date.toLocaleDateString()} ${message.date.toLocaleTimeString()}`}</td>
-            <td>{message.type}</td>
-            <td>{message.content}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+      <div className={classes.connectionStatus}>
+        {connectionStatus === "connected" ? (
+          <IconPlugConnected color="green" />
+        ) : connectionStatus == "connecting" ? (
+          <IconCloudDataConnection color="orange" />
+        ) : (
+          <IconPlugConnectedX color="red" />
+        )}{" "}
+        {connectionStatus}
+      </div>
+      {messages.length === 0 ? (
+        <p>No messages yet.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Device</th>
+              <th>Action</th>
+              <th>Payload</th>
+            </tr>
+          </thead>
+          <tbody>
+            {messages.map((message) => (
+              <tr key={message.id}>
+                <td>{`${message.date.toLocaleDateString()} ${message.date.toLocaleTimeString()}`}</td>
+                <td>
+                  {!message.clientId ? "server" : `client ${message.clientId}`}
+                </td>
+                <td>{message.type}</td>
+                <td>{message.content}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
   );
 };
 
