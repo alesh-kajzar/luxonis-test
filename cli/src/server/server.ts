@@ -50,6 +50,14 @@ export function startServers() {
       }
     });
 
+    socket.on("error", () => {
+      oss.broadcast({
+        clientId: clientId,
+        type: "Connection error",
+        input: false,
+      });
+    });
+
     socket.on("close", () => {
       oss.broadcast({
         clientId: clientId,

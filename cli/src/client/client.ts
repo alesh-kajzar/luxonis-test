@@ -32,6 +32,8 @@ client.on("data", (data) => {
 
       if (process.argv.length > 2 && process.argv[2] === "create") {
         client.write(serializeMessage(MessageType.IGetOpponents));
+      } else {
+        console.log("Now wait for an opponent to challenge you!");
       }
 
       break;
