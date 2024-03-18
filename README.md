@@ -18,7 +18,7 @@ Message types have following prefixes:
 #### Protocol messages
 | Message              | Payload  |  Type      |  Description          |
 |----------------------|----------|------------|----------------------|
-| ÏSendingPassword     | Yes       |  Input     |  Auth using password in payload  |  
+| ISendingPassword     | Yes       |  Input     |  Auth using password in payload  |  
 | IGetOpponents        | No       |  Input     |  Request opponent numbers.  |  
 | IChallenge           | Yes       |  Input     | Challenge an opponent, payload contains `secret` and `opponentId` delimited by '\|', e.g., `'secret\|1'`. If only a secret is provided, first available opponent is selected.                |  
 | IMove                | Yes      |  Input     |  Try to guess a secret (provided in payload)                    |  
