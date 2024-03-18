@@ -1,7 +1,12 @@
 import { createServer, Socket } from "net";
 import { WebSocketServer } from "ws";
 import { PASSWORD, TCP_PORT, WEBSOCKET_PORT } from "./config";
-import { serializeMessage, MessageType, deserializeMessage } from "./protocol";
+import {
+  serializeMessage,
+  MessageType,
+  deserializeMessage,
+  decodeMovePayload,
+} from "./protocol";
 
 type GameState = {
   clientId: number;
@@ -89,7 +94,7 @@ export function startServers() {
     const opponents = getOpponents(socket);
 
     if (challengeContent) {
-      const [secretWord, opponentId] = challengeContent.split("|");
+      const { opponentId, secret } = decodeMovePayload(challengeContent);
 
       if (
         opponents.length > 0 &&
@@ -104,7 +109,7 @@ export function startServers() {
 
           if (clientGS && opponentGS) {
             clientGS.inGame = true;
-            clientGS.secretWord = secretWord;
+            clientGS.secretWord = secret;
             opponentGS.inGame = true;
             opponentGS.isGuessing = true;
             clientGS.opponentId = opponentGS.clientId;
@@ -248,4 +253,10 @@ export function startServers() {
   });
 
   return { tcpServer, wss };
+}
+function deserializerMovePayload(challengeContent: string): {
+  opponentId: any;
+  secretWord: any;
+} {
+  throw new Error("Function not implemented.");
 }

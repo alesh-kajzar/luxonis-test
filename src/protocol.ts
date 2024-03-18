@@ -60,3 +60,15 @@ export function deserializeMessage(buffer: Buffer): {
     return { type, payload };
   }
 }
+
+export function decodeMovePayload(payload: string): {
+  secret: string;
+  opponentId: string;
+} {
+  const [secret, opponentId] = payload.split("|");
+  return { secret, opponentId };
+}
+
+export function encodeMovePayload(secret: string, opponentId?: string): string {
+  return opponentId ? `${secret}|${opponentId}` : secret;
+}
