@@ -44,6 +44,20 @@ npm run dev:client create
 Now you can go back to a player and enter your guess; follow instructions written in the standard output. Keep in mind that players alternate (creator needs to click on <Enter> or input a hint after each unsuccessful attempt of the opponent).
 
 ## Implementation
+### Test driven development
+I started with a tests, then I proceeded to the implementation. Before you run them, **terminate client/server processes**, otherwise you'll get an error (`listen EADDRINUSE: address already in use :::8081`).
+```
+cd cli
+npm run test
+```
+
+Tests cover 4 basic scenarios: authentification (success/fail), challenge when no opponent is available, full game, and full game with use of hints.
+For understanding of implementation is crutial a `testClientSequence` function in `cli/test/common.ts` that tests a sequence of server responses and client inputs for a *n* clients.
+
+<kbd>
+![image](https://github.com/alesh-kajzar/luxonis-test/assets/3010825/df216426-4a8d-4d7a-84ed-2a213574ec5c)
+</kbd>
+
 ### TCP / Unix socket protocol
 
 Each message is composed of up to three elements:
@@ -57,6 +71,7 @@ Message types have following prefixes:
 - **I** (e.g., ISendingPassword) - input sent from client to server
 - **O** (e.g., OAuthRequired) - output received from server
 - **OF** (e.g., OFNoOpponents) - received final output (client is disconnected)
+- **IF** (IFGiveUp) - input that closes the connection (opponent is also disconnected)
 
 #### Protocol messages
 | Message              | Payload  |  Type      |  Description          |
@@ -87,13 +102,19 @@ Message types have following prefixes:
 In the following diagrams you can see examples of authentification and game process. For a simplification of the test task I decided to close connection on each error.
 
 #### Auth 
+<kbd>
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/b30737c9-775e-4523-bf8f-ab72b6127fef" width="300" />
+</kbd>
 
 #### Auth success
+<kbd>
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/b2197fa7-56aa-4875-b26e-3b9309540c2d" width="300" />
+</kbd>
 
 #### Game
+<kbd>
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/01c638e6-675d-4b10-9ae4-9409ae88762a" width="300" />
+</kbd>
 
 ### Web observer
 The web observer is a Vite/React application that connects to a websocket port and shows list of last messages either sent from server or a client. Arrow down means server response, arrow up means client request.
