@@ -15,31 +15,31 @@ Message types have following prefixes:
 - **O** (e.g., OAuthRequired) - output received from server
 - **OF** (e.g., OFNoOpponents) - received final output (client is disconnected)
 
+#### Protocol messages
 | Message              | Payload  |  Type      |  Description          |
 |----------------------|----------|------------|----------------------|
 | ÏSendingPassword     | Yes       |  Input     |  Auth using password in payload  |  
-| IGetOpponents        | No       |  Input     |  Retrieve opponent numbers delimited by comma  |  
+| IGetOpponents        | No       |  Input     |  Request opponent numbers.  |  
 | IChallenge           | Yes       |  Input     | Challenge an opponent, payload contains `secret` and `opponentId` delimited by '\|', e.g., `'secret\|1'`. If only a secret is provided, first available opponent is selected.                |  
 | IMove                | Yes      |  Input     |  Try to guess a secret (provided in payload)                    |  
 |   IHint              | Yes      |  Input     |  Hint sent from client A to client B   (provided in payload)                  |  
-|   IFGiveUp           | No      |  Input Final|                      |  
-|   IContinue          | No         |  Input     |                      |  
-|   OAuthRequired      | No         |  Output    |                      |
-|   OPasswordCorrect   |  No        |  Output    |                      |
-|  OChallengeAccepted  | No         |  Output    |                      |
-|   OChallengeRejected | No         |  Output    |                      |
-|   OOpponents         |  Yes      |  Output    |                      |
-|   OGuessStart        |  No      |  Output    |                      |
-|    OWrongAttempt     |  No        |  Output    |                      |
-|     OHint            |  Yes        |  Output    |                      |
-|    OContinue         |  No        |  Output    |                      |
-|    OFPasswordIncorrect|  No      |  Output Final |                      |
-|     OFNoOpponents    |  No      |  Output Final |                      |
-|     OFGameOver       |  No      |  Output Final |                      |
-|    OFWrongState      |  No      |  Output Final |                      |
-|     OFWin            |  No      |  Output Final |                      |
-|     OFCorrectAttempt |  No      |  Output Final |                      |
-| OFUnknownMessageType |  No      |  Output Final |                      |
+|   IFGiveUp           | No      |  Input Final|  Give up and close connection.                    |  
+|   IContinue          | No         |  Input     |  Client A says to B 'continue with guesses'.                    |  
+|   OAuthRequired      | No         |  Output    | Server requires a secret.                     |
+|   OPasswordCorrect   |  No        |  Output    |  Password is correct.                    |
+|  OChallengeAccepted  | No         |  Output    |  Challenge is accepted.                    |
+|   OOpponents         |  Yes      |  Output    |  Server provides a list of opponents delimited by comma (after `IGetOpponents`)                  |
+|   OGuessStart        |  No      |  Output    |   Client can start its guesses.                   |
+|    OWrongAttempt     |  No        |  Output    | Wrong move.                     |
+|     OHint            |  Yes        |  Output    |  Hint sent from A to B, payload contains the text.                    |
+|    OContinue         |  No        |  Output    |   Client can continue its guesses.                    |
+|    OFPasswordIncorrect|  No      |  Output Final |  Initial password is incorrect.                    |
+|     OFNoOpponents    |  No      |  Output Final |  No opponents are available.                    |
+|     OFGameOver       |  No      |  Output Final |  Opponent gave up.                    |
+|    OFWrongState      |  No      |  Output Final |  Wrong state (ends connection).                    |
+|     OFWin            |  No      |  Output Final |  Correct attempt - win!                    |
+|     OFCorrectAttempt |  No      |  Output Final |  Correct attempt - client A is informed that client B won.                    |
+| OFUnknownMessageType |  No      |  Output Final |  Unknown message (ends connection)                    |
 
 In the following diagrams you can see examples of authentification and game process. For a simplification of the test task I decided to close connection on each error.
 
