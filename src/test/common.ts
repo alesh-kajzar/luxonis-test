@@ -2,7 +2,7 @@ import { Socket, Server as TCPServer, createConnection } from "net";
 import { Server } from "ws";
 import { TCP_PORT } from "../config";
 import { MessageType, deserializeMessage } from "../protocol";
-import { startServers } from "../server";
+import { startServers } from "../server/server";
 
 let tcpServer: TCPServer | undefined = undefined;
 let wss: Server | undefined = undefined;

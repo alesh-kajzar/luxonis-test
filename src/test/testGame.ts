@@ -19,6 +19,9 @@ testClientSequence(
     },
     {
       expected: MessageType.OWrongAttempt,
+    },
+    {
+      expected: MessageType.OContinue,
       response: serializeMessage(MessageType.IMove, "secret"),
     },
     {
@@ -43,6 +46,7 @@ testClientSequence(
     },
     {
       expected: MessageType.OAttempt,
+      response: serializeMessage(MessageType.IContinue),
     },
     {
       expected: MessageType.OFCorrectAttempt,
