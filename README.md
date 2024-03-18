@@ -1,4 +1,47 @@
 ## Getting started
+There are two main folders:
+- `cli` - client-server app in nodejs/typescript
+- `web` - 3rd party observer option in vite/react
+
+The easiest option to just start the app is to try a dev mode.
+### 1. Open a terminal and install and run server
+```
+cd cli
+npm install
+npm run dev:server
+```
+
+### 2. Open a new terminal and run a web observer
+```
+cd ../web
+npm install
+npm run dev
+```
+After startup, open a web browser at provided address (default is probably [http://localhost:5173/](http://localhost:5173/)).
+
+### 3. Open a new terminal and run 'player' mode
+```
+cd ../cli
+npm run dev:client
+# Connected to server!
+# Enter password: (input 'password' without quotation marks; password is defined in cli/src/config.ts)
+# Password correct! Client id: 1
+# Now wait for an opponent to challenge you!
+```
+
+### 4. Open a new terminal and run 'game creator' mode
+```
+npm run dev:client create
+# Connected to server!
+# Enter password: (input 'password' without quotation marks as before)
+# Password correct! Client id: 2
+# Opponents: 1
+# Enter opponent id: (input an opponent number, e.g., '2', or just confirm by <Enter>)
+# Enter secret to guess: (input a secret word, e.g.: 'secret')
+# Challenge accepted! Waiting for attempts...
+```
+
+Now you can go back to a player and enter your guess; follow instructions written in the standard output. Keep in mind that players alternate (creator needs to click on <Enter> or input a hint after each unsuccessful attempt of the opponent).
 
 ## Implementation
 ### TCP / Unix socket protocol
