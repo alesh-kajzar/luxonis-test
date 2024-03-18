@@ -1,7 +1,11 @@
 ## Getting started
 There are two main folders:
 - `cli` - client-server app in nodejs/typescript
-- `web` - 3rd party observer option in vite/react
+  - In `cli/src/config.ts` is a basic configuration
+    - websocket will be opened on port `:8081` by default
+    - TCP port will be on port `:8080` by default
+    - default password for server connection is `password`
+- `web` - 3rd party observer option in Vite/React
 
 The easiest option to just start the app is to try a dev mode.
 
@@ -57,7 +61,7 @@ npm run build # build a vite application
 
 ## Implementation
 ### Test driven development
-I started with a tests, then I proceeded to the implementation. Before you run them, **terminate client/server processes**, otherwise you'll get an error (`listen EADDRINUSE: address already in use :::8081`).
+I started by writing tests, then I proceeded to the implementation. Before you run them, **terminate client/server processes**, otherwise you'll get an error (`listen EADDRINUSE: address already in use :::8081`).
 ```
 cd cli
 npm run test
