@@ -2,8 +2,8 @@
 There are two main folders:
 - `cli` - client-server app in nodejs/typescript
   - In `cli/src/config.ts` is a basic configuration
-    - websocket will be opened on port `:8081` by default
-    - TCP port will be on port `:8080` by default
+    - Websocket observer connects to a port `:8081` by default
+    - TCP port is `:8080` by default
     - default password for server connection is `password`
 - `web` - 3rd party observer option in Vite/React
 
@@ -141,5 +141,9 @@ Arrow down means server response, arrow up means client request.
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/8355295e-673b-4f63-b8a4-bb47aa132367" />
 </kbd>
 
-As the web observer is a **bonus task**, I decided to send messages as full strings for a simplification. I also realise that this implementation would show only those requests that are sent during the time the website is running.
-If a history woud be necessary (which is often the case), I would save the messages into a file or a database instead.
+#### Important disclaimer
+
+As the web observer is a **bonus task**, I decided to send messages as full strings for a simplification. 
+I also realise that this implementation would show only those requests that are sent during the time the website is running.
+If a history woud be necessary (which is often the case in real life), I would save the messages into a file or a database instead.
+I decided for this solution, because it is an easy way to show protocol messages in the real time.
