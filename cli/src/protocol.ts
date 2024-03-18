@@ -41,7 +41,7 @@ export const messageMap = {
   [MessageType.IHint]: "Hint",
   [MessageType.IFGiveUp]: "Give up",
   [MessageType.IContinue]: "Continue",
-  [MessageType.OAuthRequired]: "Auth required",
+  [MessageType.OAuthRequired]: "Connected, password required",
   [MessageType.OPasswordCorrect]: "Password correct",
   [MessageType.OChallengeAccepted]: "Challenge accepted",
   [MessageType.OChallengeRejected]: "Challenge rejected",

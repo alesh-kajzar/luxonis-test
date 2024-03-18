@@ -4,6 +4,7 @@ import {
   IconCloudDataConnection,
   IconPlugConnected,
   IconPlugConnectedX,
+  IconRefresh,
 } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
 import classes from "./ObserverTable.module.css";
@@ -63,9 +64,14 @@ const ObserverTable: React.FC = () => {
           <IconPlugConnectedX color="red" />
         )}{" "}
         {connectionStatus}
+        {connectionStatus === "disconnected" && (
+          <button onClick={() => window.location.reload()}>
+            <IconRefresh />
+          </button>
+        )}
       </div>
       {messages.length === 0 ? (
-        <p>No messages yet.</p>
+        <p>No messages yet. Try to start a client.</p>
       ) : (
         <table>
           <thead>

@@ -12,12 +12,6 @@ export function startServers() {
   tcpServer.on("connection", (socket: Socket) => {
     const clientId = connectionManager.initializeClient(socket);
 
-    oss.broadcast({
-      clientId: clientId,
-      type: "Connected",
-      input: true,
-    });
-
     socket.on("data", (data) => {
       const { type, payload } = deserializeMessage(data);
 

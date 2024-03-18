@@ -60,9 +60,10 @@ class ConnectionManager {
 
   public processPassword(socket: Socket, password?: string) {
     if (password === PASSWORD) {
-      this.processPasswordCorrect(socket);
+      const clientGS = this.clients.get(socket)!;
+      this.processPasswordCorrect(socket, clientGS.clientId);
       this.clients.set(socket, {
-        ...this.clients.get(socket)!,
+        ...clientGS,
         loggedIn: true,
       });
     } else {
@@ -70,11 +71,11 @@ class ConnectionManager {
     }
   }
 
-  public processPasswordCorrect(socket: Socket) {
+  public processPasswordCorrect(socket: Socket, clientId: number) {
     this.writeMessage(
       socket,
       MessageType.OPasswordCorrect,
-      this.clientIdCounter.toString()
+      clientId.toString()
     );
   }
 
