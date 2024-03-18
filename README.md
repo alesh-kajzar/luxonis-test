@@ -67,7 +67,7 @@ Tests cover 4 basic scenarios: authentification (success/fail), challenge when n
 For understanding of implementation is crutial a `testClientSequence` function in `cli/test/common.ts` that tests a sequence of server responses and client inputs for a *n* clients.
 
 <kbd>
-![image](https://github.com/alesh-kajzar/luxonis-test/assets/3010825/df216426-4a8d-4d7a-84ed-2a213574ec5c)
+<img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/df216426-4a8d-4d7a-84ed-2a213574ec5c" />
 </kbd>
 
 ### TCP / Unix socket protocol
