@@ -4,14 +4,16 @@ There are two main folders:
 - `web` - 3rd party observer option in vite/react
 
 The easiest option to just start the app is to try a dev mode.
-### 1. Open a terminal and install and run server
+
+### Run dev mode
+#### 1. Open a terminal and install and run server
 ```
 cd cli
 npm install
 npm run dev:server
 ```
 
-### 2. Open a new terminal and run a web observer
+#### 2. Open a new terminal and run a web observer
 ```
 cd ../web
 npm install
@@ -19,7 +21,7 @@ npm run dev
 ```
 After startup, open a web browser at provided address (default is probably [http://localhost:5173/](http://localhost:5173/)).
 
-### 3. Open a new terminal and run 'player' mode
+#### 3. Open a new terminal and run 'player' mode
 ```
 cd ../cli
 npm run dev:client
@@ -29,7 +31,7 @@ npm run dev:client
 # Now wait for an opponent to challenge you!
 ```
 
-### 4. Open a new terminal and run 'game creator' mode
+#### 4. Open a new terminal and run 'game creator' mode
 ```
 npm run dev:client create
 # Connected to server!
@@ -42,6 +44,16 @@ npm run dev:client create
 ```
 
 Now you can go back to a player and enter your guess; follow instructions written in the standard output. Keep in mind that players alternate (creator needs to click on <Enter> or input a hint after each unsuccessful attempt of the opponent).
+
+### Build and run a production version
+```
+cd cli
+npm run build
+npm start:server # start a server
+npm start:client # start a client
+cd ../web
+npm run build # build a vite application
+```
 
 ## Implementation
 ### Test driven development
