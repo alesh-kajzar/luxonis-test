@@ -257,6 +257,7 @@ class ConnectionManager {
 
     this.oss.broadcast({
       clientId: this.clients.get(socket)!.clientId,
+      input: false,
       type: messageMap[type],
       content: payload,
     });

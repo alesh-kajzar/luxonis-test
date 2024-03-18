@@ -1,4 +1,6 @@
 import {
+  IconArrowDown,
+  IconArrowUp,
   IconCloudDataConnection,
   IconPlugConnected,
   IconPlugConnectedX,
@@ -12,6 +14,7 @@ type Message = {
   type: string;
   content?: string;
   date: Date;
+  input: boolean;
 };
 
 type ConnectionStatus = "connecting" | "connected" | "disconnected";
@@ -45,9 +48,7 @@ const ObserverTable: React.FC = () => {
     };
 
     return () => {
-      if (ws.readyState === ws.OPEN) {
-        ws.close();
-      }
+      ws.close();
     };
   }, []);
 
@@ -69,6 +70,7 @@ const ObserverTable: React.FC = () => {
         <table>
           <thead>
             <tr>
+              <th>#</th>
               <th>Date</th>
               <th>Device</th>
               <th>Action</th>
@@ -78,9 +80,24 @@ const ObserverTable: React.FC = () => {
           <tbody>
             {messages.map((message) => (
               <tr key={message.id}>
+                <td>{message.id + 1}</td>
                 <td>{`${message.date.toLocaleDateString()} ${message.date.toLocaleTimeString()}`}</td>
                 <td>
-                  {!message.clientId ? "server" : `client ${message.clientId}`}
+                  <div
+                    className={classes.device}
+                    title={
+                      message.input
+                        ? "Message sent by client"
+                        : "Message sent by server"
+                    }
+                  >
+                    {message.input ? (
+                      <IconArrowUp color="green" />
+                    ) : (
+                      <IconArrowDown color="orange" />
+                    )}
+                    {message.clientId}
+                  </div>
                 </td>
                 <td>{message.type}</td>
                 <td>{message.content}</td>

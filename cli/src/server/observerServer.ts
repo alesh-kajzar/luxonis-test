@@ -5,6 +5,7 @@ type ObserverMessage = {
   clientId: number;
   type: string;
   content?: string;
+  input: boolean;
 };
 
 export default class ObserverServer {

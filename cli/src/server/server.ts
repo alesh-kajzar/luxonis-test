@@ -15,6 +15,7 @@ export function startServers() {
     oss.broadcast({
       clientId: clientId,
       type: "Connected",
+      input: true,
     });
 
     socket.on("data", (data) => {
@@ -22,6 +23,7 @@ export function startServers() {
 
       oss.broadcast({
         clientId: clientId,
+        input: true,
         type: messageMap[type],
         content: payload,
       });
@@ -58,6 +60,7 @@ export function startServers() {
       oss.broadcast({
         clientId: clientId,
         type: "Disconnected",
+        input: true,
       });
 
       connectionManager.removeSocket(socket);

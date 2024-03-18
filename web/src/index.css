@@ -28,6 +28,7 @@ body {
   
   border-right: 1px dashed #d9d9d9;
   border-left: 1px dashed #d9d9d9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -41,14 +42,17 @@ h1 {
 table {
   border-spacing: 0;
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
   margin-top: 1em;
   border: 1px solid #d9d9d9;
 }
 
 td, th {
   padding: 0.5em;
-  border: 1px solid #d9d9d9;
+}
+
+thead th {
+  border-bottom: 1px solid #d9d9d9;
 }
 
 th {
