@@ -1,15 +1,19 @@
 import { createServer, Socket } from "net";
-import { TCP_PORT, WEBSOCKET_PORT } from "../config";
+import { TCP_PORT, WEBSOCKET_PORT, UNIX_PATH } from "../config";
 import { deserializeMessage, messageMap, MessageType } from "../protocol";
 import ConnectionManager from "./connectionManager";
 import ObserverServer from "./observerServer";
 
 export function startServers() {
-  const tcpServer = createServer();
+  const server = createServer();
   const oss = new ObserverServer(WEBSOCKET_PORT);
   const connectionManager = new ConnectionManager(oss);
 
-  tcpServer.on("connection", (socket: Socket) => {
+  if (UNIX_PATH) {
+    server.listen(UNIX_PATH);
+  }
+
+  server.on("connection", (socket: Socket) => {
     const clientId = connectionManager.initializeClient(socket);
 
     socket.on("data", (data) => {
@@ -69,9 +73,9 @@ export function startServers() {
     });
   });
 
-  tcpServer.listen(TCP_PORT);
+  server.listen(TCP_PORT);
 
-  return { tcpServer, oss };
+  return { tcpServer: server, oss };
 }
 
 process.argv.length > 2 && process.argv[2] === "listen" && startServers();

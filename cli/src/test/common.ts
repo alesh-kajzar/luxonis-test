@@ -74,7 +74,7 @@ export const testClientSequence = (
       })
     );
 
-    clientWrappers.forEach((clientWrapper, index) => {
+    clientWrappers.forEach((clientWrapper) => {
       clientWrapper.client.on("data", (data) => {
         processSequence(
           data,
