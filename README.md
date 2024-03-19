@@ -1,3 +1,22 @@
+## Prerequisites
+### Install `git`
+```
+sudo apt-get install git
+```
+### Install `curl`
+```
+sudo apt install curl
+```
+### Instal `nodejs` using `nvm`
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+nvm install v18.17.0
+```
+### Install `npm`
+```
+sudo apt install npm
+```
+
 ## Getting started
 There are two main folders:
 - `cli` - client-server app in nodejs/typescript
