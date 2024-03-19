@@ -40,14 +40,22 @@ client.on("data", (data) => {
     case MessageType.OOpponents:
       console.log("Opponents: " + payload?.toString());
       rl.question("Enter opponent id: ", (opponentId) => {
-        rl.question("Enter secret to guess: ", (secret) => {
-          client.write(
-            serializeMessage(
-              MessageType.IChallenge,
-              encodeMovePayload(secret, opponentId)
-            )
-          );
-        });
+        const getSecret = () => {
+          rl.question("Enter secret to guess: ", (secret) => {
+            if (secret.length == 0 || secret == "giveup") {
+              console.log("Secret cannot be empty or 'giveup'.\n");
+              getSecret();
+            } else {
+              client.write(
+                serializeMessage(
+                  MessageType.IChallenge,
+                  encodeMovePayload(secret, opponentId)
+                )
+              );
+            }
+          });
+        };
+        getSecret();
       });
 
       break;
@@ -58,13 +66,17 @@ client.on("data", (data) => {
       console.log("Hint received: " + payload?.toString());
     case MessageType.OGuessStart:
     case MessageType.OContinue:
-      rl.question("Enter guess: ", (guess) => {
-        client.write(serializeMessage(MessageType.IMove, guess));
+      rl.question("Enter a guess or 'giveup': ", (guess) => {
+        if (guess == "giveup") {
+          client.write(serializeMessage(MessageType.IFGiveUp));
+        } else {
+          client.write(serializeMessage(MessageType.IMove, guess));
+        }
       });
       break;
     case MessageType.OAttempt:
       console.log("Attempt made!");
-      rl.question("Enter a hint, if you want: ", (hint) => {
+      rl.question("Enter a hint or leave empty: ", (hint) => {
         if (hint) {
           client.write(serializeMessage(MessageType.IHint, hint));
         } else {
