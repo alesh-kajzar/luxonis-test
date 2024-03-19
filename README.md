@@ -1,3 +1,8 @@
+## Youtube video
+Click the image below to see a video explanation of my implementation.
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/nQb2GHsmYj0/0.jpg)](https://www.youtube.com/embed/nQb2GHsmYj0?si=86iWErVzIYzAE6Uv)
+
 ## Prerequisites
 
 The app is working on Ubuntu 22.04, but first you need to install some utilites mentioned below.
