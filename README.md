@@ -1,5 +1,7 @@
 ## Prerequisites
 
+The app is working on Ubuntu 22.04, but first you need to install some utilites mentioned below.
+
 ### Install `git`
 
 ```
