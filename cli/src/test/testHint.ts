@@ -32,7 +32,7 @@ testClientSequence(
     },
     {
       expected: MessageType.OChallengeAccepted,
-      response: serializeMessage(MessageType.IHint, "hint: secret"),
+      response: serializeMessage(MessageType.IHint, "myhint"),
     },
     {
       expected: MessageType.OFGameOver,
