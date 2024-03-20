@@ -81,11 +81,14 @@ export function startServers() {
   if (process.platform !== "win32" && process.platform !== "darwin") {
     try {
       unlinkSync(UNIX_PATH); // remove old socket if exists
-    } catch (e) {}
-    unixServer.listen(UNIX_PATH);
-    unixServer.on("connection", (socket: Socket) => {
-      handleConnection(socket);
-    });
+      unixServer.listen(UNIX_PATH);
+
+      unixServer.on("connection", (socket: Socket) => {
+        handleConnection(socket);
+      });
+    } catch (e) {
+      console.log("Error while starting unix server");
+    }
   }
 
   return { tcpServer, unixServer, oss };
