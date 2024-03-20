@@ -84,7 +84,7 @@ export function startServers() {
 
       unixServer.listen(UNIX_PATH);
     } catch (e) {
-      console.error("unix socket not started", e);
+      console.log("unix socket not started", e);
     }
     unixServer.on("connection", (socket: Socket) => {
       handleConnection(socket);
