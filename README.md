@@ -1,4 +1,5 @@
 ## Youtube video
+
 Click the image below to see a video explanation of my implementation.
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/nQb2GHsmYj0/0.jpg)](https://www.youtube.com/embed/nQb2GHsmYj0?si=86iWErVzIYzAE6Uv)
@@ -39,7 +40,7 @@ There are two main folders:
 - `cli` - client-server app in nodejs/typescript
   - In `cli/src/config.ts` is a basic configuration
     - Websocket observer connects to a port `:8081` by default
-    - TCP port is `:8080` by default
+    - TCP port is set to `:8080` by default
     - default password for server connection is `password`
     - unix path is `/tmp/unix.sock`
 - `web` - 3rd party observer option in Vite/React
