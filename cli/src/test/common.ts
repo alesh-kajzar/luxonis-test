@@ -1,7 +1,7 @@
 import { Socket, Server as TCPServer, createConnection } from "net";
 import { Server } from "ws";
 import { TCP_PORT } from "../config";
-import { MessageType, deserializeMessage } from "../protocol";
+import { MessageType, deserializeMessage, messageMap } from "../protocol";
 import { startServers } from "../server/server";
 import ObserverServer from "../server/observerServer";
 
@@ -48,6 +48,10 @@ export function checkSequenceProcessed(
       if (getCommandIndex() === commandSequence.length) {
         resolve();
       } else {
+        console.log(
+          "Expected sequence: ",
+          commandSequence.map((c) => messageMap[c.expected]).join("; ")
+        );
         reject(
           `Sequence stopped too soon (index=${getCommandIndex()}; length=${
             commandSequence.length
