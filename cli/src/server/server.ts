@@ -83,8 +83,10 @@ export function startServers() {
       unlinkSync(UNIX_PATH);
 
       unixServer.listen(UNIX_PATH);
-    } catch (e) {
-      console.log("unix socket not started", e);
+    } catch (e: any) {
+      if (e.code !== "ENOENT") {
+        throw e;
+      }
     }
     unixServer.on("connection", (socket: Socket) => {
       handleConnection(socket);
