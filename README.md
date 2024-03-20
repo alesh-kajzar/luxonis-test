@@ -108,7 +108,7 @@ npm run build # build a vite application
 
 ### Test driven development
 
-I started by writing tests, then I proceeded to the implementation. Before you run them, **terminate client/server processes**, otherwise you'll get an error (`listen EADDRINUSE: address already in use :::8081`).
+I started by writing tests, then I proceeded to the implementation. Before you run them, **terminate client/server processes** of this app you ran before, otherwise you'll get an error (`listen EADDRINUSE: address already in use :::8081`).
 
 ```
 cd cli
@@ -121,6 +121,8 @@ For understanding of implementation is crutial a `testClientSequence` function i
 <kbd>
 <img src="https://github.com/alesh-kajzar/luxonis-test/assets/3010825/df216426-4a8d-4d7a-84ed-2a213574ec5c" />
 </kbd>
+
+The protocol could be further improved by synchronizing the requests using `ACK` or a callback function; sometimes the tests fail on a virtual machine on err 34 (`OFWrongState`), because a next message is sent before both clients get the same message.
 
 ### TCP / Unix socket protocol
 
