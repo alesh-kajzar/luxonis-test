@@ -3,17 +3,14 @@ import { TCP_PORT, WEBSOCKET_PORT, UNIX_PATH } from "../config";
 import { deserializeMessage, messageMap, MessageType } from "../protocol";
 import ConnectionManager from "./connectionManager";
 import ObserverServer from "./observerServer";
+import { unlinkSync } from "fs";
 
 export function startServers() {
-  const server = createServer();
+  const tcpServer = createServer();
   const oss = new ObserverServer(WEBSOCKET_PORT);
   const connectionManager = new ConnectionManager(oss);
 
-  if (UNIX_PATH) {
-    server.listen(UNIX_PATH);
-  }
-
-  server.on("connection", (socket: Socket) => {
+  const handleConnection = (socket: Socket) => {
     const clientId = connectionManager.initializeClient(socket);
 
     socket.on("data", (data) => {
@@ -71,11 +68,30 @@ export function startServers() {
 
       connectionManager.removeSocket(socket);
     });
+  };
+
+  tcpServer.on("connection", (socket: Socket) => {
+    handleConnection(socket);
   });
 
-  server.listen(TCP_PORT);
+  tcpServer.listen(TCP_PORT);
 
-  return { tcpServer: server, oss };
+  const unixServer = createServer();
+
+  if (process.platform !== "win32" && process.platform !== "darwin") {
+    try {
+      unlinkSync(UNIX_PATH);
+
+      unixServer.listen(UNIX_PATH);
+    } catch (e) {
+      console.error("unix socket not started", e);
+    }
+    unixServer.on("connection", (socket: Socket) => {
+      handleConnection(socket);
+    });
+  }
+
+  return { tcpServer, unixServer, oss };
 }
 
 process.argv.length > 2 && process.argv[2] === "listen" && startServers();

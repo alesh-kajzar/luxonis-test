@@ -34,7 +34,7 @@ There are two main folders:
     - Websocket observer connects to a port `:8081` by default
     - TCP port is `:8080` by default
     - default password for server connection is `password`
-    - unix path is not used by default, if needed, change `UNIX_PATH` variable
+    - unix path is `/tmp/unix.sock`
 - `web` - 3rd party observer option in Vite/React
 
 The easiest option to just start the app is to try a dev mode.
